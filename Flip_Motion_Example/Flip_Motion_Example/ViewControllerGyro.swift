@@ -37,7 +37,7 @@ class ViewControllerGyro: UIViewController {
 					
 					if let x = data?.rotationRate.x,//lateral axis rotation
 						let z = data?.userAcceleration.z,
-						z < -0.9 && x < -8.0 {
+						z < -0.4 && x < -4.0 {
 						
 						DispatchQueue.main.async {
 							self?.motionLabel.text = "Flip Up"
@@ -53,7 +53,7 @@ class ViewControllerGyro: UIViewController {
 						}
 					} else if let x = data?.rotationRate.x, //lateral axis rotation
 						let z = data?.userAcceleration.z,
-						z > 1.0 && x > 8.0 {
+						z > 0.5 && x > 4.0 {
 						
 						DispatchQueue.main.async {
 							self?.motionLabel.text = "Flip Down"

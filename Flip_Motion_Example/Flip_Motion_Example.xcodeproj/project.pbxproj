@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E211F7C91FD21229006650B8 /* GyroManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E211F7C81FD21229006650B8 /* GyroManager.swift */; };
+		E211F7CB1FD216A4006650B8 /* ViewControllerGyroManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E211F7CA1FD216A4006650B8 /* ViewControllerGyroManager.swift */; };
 		E2F019A81FCF77210059B4A4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2F019A71FCF77210059B4A4 /* AppDelegate.swift */; };
 		E2F019AA1FCF77210059B4A4 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2F019A91FCF77210059B4A4 /* ViewController.swift */; };
 		E2F019AD1FCF77210059B4A4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E2F019AB1FCF77210059B4A4 /* Main.storyboard */; };
@@ -17,6 +19,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		E211F7C81FD21229006650B8 /* GyroManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GyroManager.swift; sourceTree = "<group>"; };
+		E211F7CA1FD216A4006650B8 /* ViewControllerGyroManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewControllerGyroManager.swift; sourceTree = "<group>"; };
 		E2F019A41FCF77210059B4A4 /* Flip_Motion_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Flip_Motion_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2F019A71FCF77210059B4A4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E2F019A91FCF77210059B4A4 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -61,7 +65,9 @@
 				E2F019A71FCF77210059B4A4 /* AppDelegate.swift */,
 				E2F019BB1FCF9E130059B4A4 /* ViewControllerOrientation.swift */,
 				E2F019B91FCF84350059B4A4 /* ViewControllerGyro.swift */,
+				E211F7C81FD21229006650B8 /* GyroManager.swift */,
 				E2F019A91FCF77210059B4A4 /* ViewController.swift */,
+				E211F7CA1FD216A4006650B8 /* ViewControllerGyroManager.swift */,
 				E2F019AB1FCF77210059B4A4 /* Main.storyboard */,
 				E2F019AE1FCF77210059B4A4 /* Assets.xcassets */,
 				E2F019B01FCF77210059B4A4 /* LaunchScreen.storyboard */,
@@ -142,8 +148,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E211F7C91FD21229006650B8 /* GyroManager.swift in Sources */,
 				E2F019AA1FCF77210059B4A4 /* ViewController.swift in Sources */,
 				E2F019BC1FCF9E130059B4A4 /* ViewControllerOrientation.swift in Sources */,
+				E211F7CB1FD216A4006650B8 /* ViewControllerGyroManager.swift in Sources */,
 				E2F019BA1FCF84350059B4A4 /* ViewControllerGyro.swift in Sources */,
 				E2F019A81FCF77210059B4A4 /* AppDelegate.swift in Sources */,
 			);
