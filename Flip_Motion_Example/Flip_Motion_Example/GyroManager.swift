@@ -8,97 +8,97 @@
 
 import Foundation
 import CoreMotion
+import UIKit
 
 class GyroManager {
 	typealias Callback = ()->Void
 	private var flipUpCallback: Callback?
 	private var flipDownCallback: Callback?
 	
-	//CMMotion Manager
-	var manager: CMMotionManager? = nil
-	
-	//Waiting Flag
-	var isWaitingForMoition = false
+	var manager:CMMotionManager
+	var stableTheta:Double = 1.4 //assumes vertical
+	var previousAttitude:CMAttitude? = nil
+	var flippedFlag = 0 // debounce flipped flag
 	
 	init() {
-		//Setup CoreMotion
 		let cmQueue = OperationQueue()
 		manager = CMMotionManager()
-	
+		
 		//Setup CoreMotion flip detection and start polling
-		if manager!.isDeviceMotionAvailable {
-			manager!.deviceMotionUpdateInterval = 0.02
-			manager!.startDeviceMotionUpdates(to: cmQueue) {
-				[weak self] (data: CMDeviceMotion?, error: Error?) in
-				
-				if self?.isWaitingForMoition == true {
-					
-					if let x = data?.rotationRate.x, //Lateral axis rotation rate
-						let z = data?.userAcceleration.z { //Normal axis acceleration
-						
-						if z < -0.4 && x < -6.0 {
-							//Flip up
-							self!.flipDispatch(callbackFunc: self?.flipUpCallback)
-							
-							//Debug print statments
-							print("Flip Up\nx: " + String(x))
-							print("z: " + String(z) + "\n")
-							
-						} else if z > 0.5 && x > 6.0 {
-							//Flip down
-							self!.flipDispatch(callbackFunc: self?.flipDownCallback)
-						
-							//Debug print statments
-							print("Flip Down\nx: " + String(x))
-							print("z: " + String(z) + "\n")
-							
-						}
-					}
+		guard manager.isDeviceMotionAvailable else {
+			print("Warning: device motion unavailable.")
+			return
+		}
+		
+		manager.deviceMotionUpdateInterval = 0.09
+		
+		manager.startDeviceMotionUpdates(to: cmQueue) { (data, error) in
+			guard
+				let x = data?.rotationRate.x, // Lateral axis rotation rate
+				let currentAttitude = data?.attitude //get current attitude, all 3 euler angles
+			else {
+				print("Warning: could not parse CoreMotion data.")
+				return
+			}
+			
+			if self.previousAttitude == nil {
+				//save previous
+				self.previousAttitude = currentAttitude
+				return
+			}
+			
+			//copy currentAttitude for next itteration, currentAttitude will be modified
+			let backupAttitude = currentAttitude.copy(with: nil) as! CMAttitude
+			
+			//calulate the difference between the previous attitude and the present
+			currentAttitude.multiply(byInverseOf: self.previousAttitude!)
+			let theta = currentAttitude.pitch //this is the difference in pitch
+			
+			//store backup as previous
+			self.previousAttitude = backupAttitude
+			
+			/* NOTE: x or rotation rate about the x-axis, also known as l, implys direction.
+			   Theta is the euler angle for pitch in rads, 90 degrees is ~ 1.57 rads;
+			   this makes flip up postive or negative, and down is always postive --
+			   between their differences. */
+			if self.flippedFlag == 0 && (theta > 0.3 || theta < -0.3) && x < -0.3 {
+				// Flip up
+				self.flipDispatch(callbackFunc: self.flipUpCallback)
+				self.flippedFlag = 10
+				// Debug print statments
+				print("Flip Up")
+				print("theta: " + String(theta))
+				print("x: " + String(x) + "\n")
+			} else if self.flippedFlag == 0 && theta > 0.3 && x > 0.3  {
+				// Flip down
+				self.flipDispatch(callbackFunc: self.flipDownCallback)
+				self.flippedFlag = 10
+				// Debug print statments
+				print("Flip Down")
+				print("theta: " + String(theta))
+				print("x: " + String(x) + "\n")
+			} else {
+				if self.flippedFlag > 0 {
+					self.flippedFlag = self.flippedFlag - 1
 				}
 			}
 		}
-		
-		//Enable waiting for motion
-		isWaitingForMoition = true
 	}
 	
 	private func flipDispatch(callbackFunc callback: Callback?) {
 		DispatchQueue.main.async {
-			if callback != nil {
-				callback!()
-			}
-	
-			self.isWaitingForMoition = false //not waiting for motion - debounce
-			
-			//Start Timer to resume waiting for motion - debounce (run on main queue)
-			Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: { (t:Timer) in
-				self.isWaitingForMoition = true
-				print("isWaitingForMoition = true\n")
-			})
-			/** NOTE: Once an timer is invalidated it cannot be reused per the API,
-			    thus a new Timer is created every time. "Once invalidated, timer objects
-			    cannot be reused."  An interval timer does not work here. **/
+			if let callback = callback { callback() }
 		}
 	}
 	
 	func listen() {
-		if self.manager != nil {
-			//start the updates
-			self.manager!.startGyroUpdates()
-			self.manager!.startAccelerometerUpdates()
-		} else {
-			print("Error: GyroManager not initialized")
-		}
+		manager.startGyroUpdates()
+		manager.startAccelerometerUpdates()
 	}
 	
 	func stop() {
-		if self.manager != nil {
-			//stop the updates
-			self.manager!.stopGyroUpdates()
-			self.manager!.stopAccelerometerUpdates()
-		} else {
-			print("Error: GyroManager not initialized")
-		}
+		manager.stopGyroUpdates()
+		manager.stopAccelerometerUpdates()
 	}
 	
 	func onFlipUp(_ callback: @escaping Callback) {
